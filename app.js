@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const translate = require('@vitalets/google-translate-api');
 const token = require('./token.json');
 
-const transReg = /\?([\a-zA-Z\-_]+)(\^*)([0-9]*)/g
+const transReg = /(^|\s)\?([\a-zA-Z\-_]+)(\^*)([0-9]*)($|\s)/g
 const nameReg = /^<\**(.+?)\**>/;
 
 let transAndSend = (msg, to) => {
@@ -48,9 +48,9 @@ discord.on('message', msg => {
     let match = transReg.exec(text); transReg.lastIndex = 0;
     if(match) {
 
-        let to = match[1];
+        let to = match[2];
 
-        let num = Number(match[3] || match[2].length);
+        let num = Number(match[4] || match[3].length);
         if(num > 100) {
             msg.channel.send("Number too large").catch(console.error);
             return;
