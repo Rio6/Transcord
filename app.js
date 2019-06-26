@@ -2,10 +2,10 @@ const Discord = require('discord.js');
 const translate = require('@vitalets/google-translate-api');
 const token = require('./token.json');
 
-const transReg = /(^|\s)\?([\a-zA-Z\-_]+)(\^*)([0-9]*)($|\s)/g
+const transReg = /(^|\s)([\a-zA-Z\-_]*)\?([\a-zA-Z\-_]+)(\^*)([0-9]*)($|\s)/g
 const nameReg = /^<\**(.+?)\**>/;
 
-let transAndSend = (msg, to) => {
+let transAndSend = (msg, from, to) => {
 
     let name = msg.member.nickname || msg.author.username;
     let text = msg.content.replace(transReg, "");
@@ -19,7 +19,7 @@ let transAndSend = (msg, to) => {
         }
     }
 
-    translate(text, {to: to}).then(res => {
+    translate(text, {from: from, to: to}).then(res => {
         msg.channel.send(name + ": " + res.text).catch(console.error);
     }).catch(e => {
         console.error("Translate error", e.code);
@@ -48,20 +48,21 @@ discord.on('message', msg => {
     let match = transReg.exec(text); transReg.lastIndex = 0;
     if(match) {
 
-        let to = match[2];
+        let from = match[2];
+        let to = match[3];
 
-        let num = Number(match[4] || match[3].length);
+        let num = Number(match[5] || match[4].length);
         if(num > 100) {
             msg.channel.send("Number too large").catch(console.error);
             return;
         } else if(num === 0) {
-            transAndSend(msg, to);
+            transAndSend(msg, from, to);
             return;
         }
 
         msg.channel.fetchMessages({limit: num, before: msg.id}).then(msgs => {
             if(msgs.size === num) {
-                transAndSend(msgs.last(), to);
+                transAndSend(msgs.last(), from, to);
             } else {
                 msg.channel.send("Message not found").catch(console.error);
             }
