@@ -10,6 +10,8 @@ let transAndSend = (msg, from, to) => {
     let name = msg.member.nickname || msg.author.username;
     let text = msg.content.replace(transReg, "");
 
+    if(from.toUpperCase() === to.toUpperCase()) return;
+
     if(msg.author.username === "Istrolid Chat") {
         let match = null;
         match = nameReg.exec(msg.content); nameReg.lastIndex = 0;
@@ -20,7 +22,9 @@ let transAndSend = (msg, from, to) => {
     }
 
     translate(text, {from: from, to: to}).then(res => {
-        msg.channel.send(name + ": " + res.text).catch(console.error);
+        if(res.from.language.iso.toUpperCase() !== to.toUpperCase()) {
+            msg.channel.send(name + ": " + res.text).catch(console.error);
+        }
     }).catch(e => {
         console.error("Translate error", e.code);
         msg.channel.send("Translate error: " + e.message).catch(console.error);
