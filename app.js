@@ -64,7 +64,7 @@ discord.on('message', msg => {
             return;
         }
 
-        msg.channel.fetchMessages({limit: num, before: msg.id}).then(msgs => {
+        msg.channel.messages.fetch({limit: num, before: msg.id}).then(msgs => {
             if(msgs.size === num) {
                 transAndSend(msgs.last(), from, to);
             } else {
