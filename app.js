@@ -10,7 +10,8 @@ const tokenReg = /`(.+?)`/g;
 translate.languages['zh'] = translate.languages['zh-CN'];
 
 const server = http.createServer((req, res) => {
-    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
 
     let msg = '';
     req.on('readable', () => {
