@@ -48,7 +48,7 @@ const transAndSend = (msg, from, to) => {
                 console.log(text, value, placeholder);
                 text = text.replaceAll(new RegExp(placeholder, 'gi'), value);
             });
-            msg.channel.send("debug " + name + ": " + text).catch(console.error);
+            msg.channel.send(name + ": " + text).catch(console.error);
         }
     }).catch(e => {
         console.error("Translate error", e.code);
