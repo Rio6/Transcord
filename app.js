@@ -14,7 +14,7 @@ const server = http.createServer((req, res) => {
 
     let msg = '';
     req.on('readable', () => {
-        msg += req.read() ?? '';
+        msg += req.read() || '';
     });
 
     req.on('end', async () => {
