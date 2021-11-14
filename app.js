@@ -30,7 +30,7 @@ const transAndSend = (msg, from, to) => {
     }
 
     const tokens = [];
-    text = text.replaceAll(tokenReg, (match, value) => {
+    text = text.replace(tokenReg, (match, value) => {
         let placeholder;
         do {
             placeholder = generatePlaceholder();
@@ -39,14 +39,11 @@ const transAndSend = (msg, from, to) => {
         return placeholder;
     });
 
-    console.log(text, tokens);
-
     translate(text, {from: from, to: to}).then(res => {
         if(res.from.language.iso.toUpperCase() !== to.toUpperCase()) {
             let text = res.text;
             tokens.forEach(({ value, placeholder }) => {
-                console.log(text, value, placeholder);
-                text = text.replaceAll(new RegExp(placeholder, 'gi'), value);
+                text = text.replace(new RegExp(placeholder, 'gi'), value);
             });
             msg.channel.send(name + ": " + text).catch(console.error);
         }
