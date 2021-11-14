@@ -9,9 +9,7 @@ const tokenReg = /`(.+?)`/g;
 translate.languages['zh'] = translate.languages['zh-CN'];
 
 const generatePlaceholder = () => {
-    return Array.from(new Array(20)).map(() => String.fromCharCode(
-        Math.floor(Math.random() * 26) + 'A'.charCodeAt(0)
-    )).join('');
+    return (Math.random() * 100000000000000000000).toFixed(0).padStart(20, '1');
 };
 
 const transAndSend = (msg, from, to) => {
