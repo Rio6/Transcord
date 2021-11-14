@@ -5,7 +5,9 @@ const token = require('./token.json');
 const transReg = /(^|\s)([\a-zA-Z\-_]*)\?([\a-zA-Z\-_]+)(\^*)([0-9]*)($|\s)/g
 const nameReg = /^<\**(.+?)\**>/;
 
-let transAndSend = (msg, from, to) => {
+translate.languages['zh'] = translate.languages['zh-CN'];
+
+const transAndSend = (msg, from, to) => {
 
     let name = msg.member.nickname || msg.author.username;
     let text = msg.content.replace(transReg, "");

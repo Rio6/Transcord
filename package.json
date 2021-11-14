@@ -4,12 +4,11 @@
     "description": "Simple discord translator",
     "main": "index.js",
     "dependencies": {
-        "@vitalets/google-translate-api": "^2.8.0",
+        "@vitalets/google-translate-api": "^7.0.0",
         "discord.js": "^12.2.0"
     },
     "scripts": {
         "start": "node app.js"
     },
-    "devDependencies": {},
     "author": "R26"
 }
