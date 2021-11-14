@@ -2,10 +2,17 @@ const Discord = require('discord.js');
 const translate = require('@vitalets/google-translate-api');
 const token = require('./token.json');
 
-const transReg = /(^|\s)([\a-zA-Z\-_]*)\?([\a-zA-Z\-_]+)(\^*)([0-9]*)($|\s)/g
+const transReg = /([\a-zA-Z\-_]*)\?([\a-zA-Z\-_]+)(\^*)([0-9]*)/
 const nameReg = /^<\**(.+?)\**>/;
+const tokenReg = /`(.+?)`/g;
 
 translate.languages['zh'] = translate.languages['zh-CN'];
+
+const generatePlaceholder = () => {
+    return Array.from(new Array(20)).map(() => String.fromCharCode(
+        Math.floor(Math.random() * 26) + 'A'.charCodeAt(0)
+    )).join('');
+};
 
 const transAndSend = (msg, from, to) => {
 
@@ -15,17 +22,33 @@ const transAndSend = (msg, from, to) => {
     if(from.toUpperCase() === to.toUpperCase()) return;
 
     if(msg.author.username === "Istrolid Chat") {
-        let match = null;
-        match = nameReg.exec(msg.content); nameReg.lastIndex = 0;
+        const match = nameReg.exec(msg.content);
         if(match && match[1]) {
             name = match[1];
             text = text.replace(nameReg, "");
         }
     }
 
+    const tokens = [];
+    text = text.replaceAll(tokenReg, (match, value) => {
+        let placeholder;
+        do {
+            placeholder = generatePlaceholder();
+        } while(text.includes(placeholder));
+        tokens.push({ value, placeholder });
+        return placeholder;
+    });
+
+    console.log(text, tokens);
+
     translate(text, {from: from, to: to}).then(res => {
         if(res.from.language.iso.toUpperCase() !== to.toUpperCase()) {
-            msg.channel.send(name + ": " + res.text).catch(console.error);
+            let text = res.text;
+            tokens.forEach(({ value, placeholder }) => {
+                console.log(text, value, placeholder);
+                text = text.replaceAll(new RegExp(placeholder, 'gi'), value);
+            });
+            msg.channel.send("debug " + name + ": " + text).catch(console.error);
         }
     }).catch(e => {
         console.error("Translate error", e.code);
@@ -33,7 +56,7 @@ const transAndSend = (msg, from, to) => {
     });
 };
 
-var discord = new Discord.Client();
+const discord = new Discord.Client();
 
 discord.on('ready', () => {
     console.log(`${discord.user.tag}` + " ready");
@@ -50,14 +73,14 @@ discord.on('message', msg => {
     if(!msg.member || msg.author.username === discord.user.username)
         return;
 
-    let text = msg.content;
-    let match = transReg.exec(text); transReg.lastIndex = 0;
+    const text = msg.content;
+    const match = transReg.exec(text);
     if(match) {
 
-        let from = match[2];
-        let to = match[3];
+        const from = match[1];
+        const to = match[2];
 
-        let num = Number(match[5] || match[4].length);
+        const num = Number(match[4] || match[3].length);
         if(num > 100) {
             msg.channel.send("Number too large").catch(console.error);
             return;
