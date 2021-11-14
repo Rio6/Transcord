@@ -1,3 +1,4 @@
+const http = require('http');
 const Discord = require('discord.js');
 const translate = require('@vitalets/google-translate-api');
 const token = require('./token.json');
@@ -7,6 +8,42 @@ const nameReg = /^<\**(.+?)\**>/;
 const tokenReg = /`(.+?)`/g;
 
 translate.languages['zh'] = translate.languages['zh-CN'];
+
+const server = http.createServer((req, res) => {
+    res.setHeader('Content-Type', 'text/plain');
+
+    let msg = '';
+    req.on('readable', () => {
+        msg += req.read() ?? '';
+    });
+
+    req.on('end', async () => {
+        try {
+            const data = JSON.parse(msg);
+            const rst = await translate(new String(data.text), {
+                from: data.from && new String(data.from) || undefined,
+                to: data.to && new String(data.to) || undefined,
+            });
+
+            res.statusCode = 200;
+            res.end(JSON.stringify({
+                text: rst.text,
+                from: rst.from,
+                raw: rst.raw,
+            }));
+        } catch(e) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({
+                error: e.toString(),
+            }));
+        }
+    });
+});
+
+const port = process.env.PORT || 8002;
+server.listen(port, () => {
+  console.log(`HTTP server running on ${port}`);
+});
 
 const generatePlaceholder = () => {
     return (Math.random() * 100000000000000000000).toFixed(0).padStart(20, '1');
