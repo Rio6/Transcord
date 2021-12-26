@@ -55,7 +55,7 @@ const transAndSend = (msg, from, to) => {
     let name = msg.member.nickname || msg.author.username;
     let text = msg.content.replace(transReg, "");
 
-    if(from.toUpperCase() === to.toUpperCase()) return;
+    if(from && from.toUpperCase() === to.toUpperCase()) return;
 
     if(msg.author.username === "Istrolid Chat") {
         const match = nameReg.exec(msg.content);
@@ -75,7 +75,7 @@ const transAndSend = (msg, from, to) => {
         return placeholder;
     });
 
-    translate(text, {from: from, to: to}).then(res => {
+    translate(text, {from, to}).then(res => {
         if(res.from.language.iso.toUpperCase() !== to.toUpperCase()) {
             let text = res.text;
             tokens.forEach(({ value, placeholder }) => {
