@@ -75,6 +75,8 @@ const transAndSend = (msg, from, to) => {
         return placeholder;
     });
 
+  if(!text) return;
+
     translate(text, {from, to}).then(res => {
         if(res.from.language.iso.toUpperCase() !== to.toUpperCase()) {
             let text = res.text;
@@ -84,7 +86,7 @@ const transAndSend = (msg, from, to) => {
             msg.channel.send(name + ": " + text).catch(console.error);
         }
     }).catch(e => {
-        console.error("Translate error", e.code);
+        console.error("Translate error", e.message);
         msg.channel.send("Translate error: " + e.message).catch(console.error);
     });
 };
