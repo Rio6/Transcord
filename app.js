@@ -75,16 +75,17 @@ const transAndSend = (msg, from, to) => {
         return placeholder;
     });
 
-  if(!text) return;
+    if(!text) {
+        msg.channel.send(name + ":").catch(console.error);
+        return;
+    }
 
     translate(text, {from, to}).then(res => {
-        if(res.from.language.iso.toUpperCase() !== to.toUpperCase()) {
-            let text = res.text;
-            tokens.forEach(({ value, placeholder }) => {
-                text = text.replace(new RegExp(placeholder, 'gi'), value);
-            });
-            msg.channel.send(name + ": " + text).catch(console.error);
-        }
+        let text = res.text;
+        tokens.forEach(({ value, placeholder }) => {
+            text = text.replace(new RegExp(placeholder, 'gi'), value);
+        });
+        msg.channel.send(name + ": " + text).catch(console.error);
     }).catch(e => {
         console.error("Translate error", e.message);
         msg.channel.send("Translate error: " + e.message).catch(console.error);
