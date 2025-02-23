@@ -92,7 +92,18 @@ const transAndSend = (msg, from, to) => {
     });
 };
 
-const discord = new Discord.Client();
+const discord = new Discord.Client({
+    intents: [
+        Discord.GatewayIntentBits.Guilds,
+        Discord.GatewayIntentBits.GuildMessages,
+        Discord.GatewayIntentBits.DirectMessages,
+        Discord.GatewayIntentBits.MessageContent,
+    ],
+    partials: [
+        Discord.Partials.Channel,
+        Discord.Partials.Message
+    ]
+});
 
 discord.on('ready', () => {
     console.log(`${discord.user.tag}` + " ready");
@@ -105,7 +116,7 @@ discord.on('disconnect', () => {
 
 discord.on('error', e => console.error("Discord error", e));
 
-discord.on('message', msg => {
+discord.on('messageCreate', msg => {
     if(!msg.member || msg.author.username === discord.user.username)
         return;
 
